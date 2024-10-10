@@ -55,6 +55,27 @@ def fill_pdf_and_save(pdf2, pdf_output, filtered_values):
     fillpdfs.write_fillable_pdf(pdf2, pdf_output, filtered_values)
     print(f"PDF compilato e salvato in: {pdf_output}")
 
+# Funzione per eliminare tutti i file all'interno di una directory
+def delete_all_files_in_directory(directory_path):
+    try:
+        # Verifica se la directory esiste
+        if os.path.exists(directory_path):
+            # Itera attraverso tutti i file nella directory
+            for filename in os.listdir(directory_path):
+                file_path = os.path.join(directory_path, filename)
+                try:
+                    if os.path.isfile(file_path) or os.path.islink(file_path):
+                        os.remove(file_path)  # Elimina i file
+                        print(f"File eliminato: {file_path}")
+                    elif os.path.isdir(file_path):
+                        print(f"Trovata sottodirectory {file_path}, ignorata.")
+                except Exception as e:
+                    print(f"Errore durante l'eliminazione del file {file_path}: {e}")
+        else:
+            print(f"La directory {directory_path} non esiste.")
+    except Exception as e:
+        print(f"Errore durante l'eliminazione dei file nella directory {directory_path}: {e}")
+
 # Lettura del file di configurazione
 config = read_config()
 
@@ -79,6 +100,10 @@ filtered_values = filter_default_values(fields_to_copy, default_values)
 
 # Scrittura dei valori nel PDF di destinazione e salvataggio del nuovo PDF
 fill_pdf_and_save(pdf2, output_pdf, filtered_values)
+
+# Eliminazione dei file nelle cartelle pdf_sorgente e pdf_destinazione
+delete_all_files_in_directory(os.path.dirname(pdf1))  # Elimina i file nella directory pdf_sorgente
+delete_all_files_in_directory(os.path.dirname(pdf2))  # Elimina i file nella directory pdf_destinazione
 
 # Stampa dei valori filtrati
 print("Valori filtrati:")
